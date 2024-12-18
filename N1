@@ -1,0 +1,149 @@
+from telegram import ReplyKeyboardMarkup, KeyboardButton, Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+
+
+# Главное меню
+def main_keyboard():
+    return ReplyKeyboardMarkup(
+        [
+            [KeyboardButton("Roles")],
+            [KeyboardButton("About project")],
+            [KeyboardButton("")]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=False
+    )
+
+
+# Подменю для кнопки Roles
+def news_submenu():
+    return ReplyKeyboardMarkup(
+        [
+            [KeyboardButton("N_ovator")],
+            [KeyboardButton("N-tertainer")],
+            [KeyboardButton("N-thusiast")],
+            [KeyboardButton("N-sider")],
+            [KeyboardButton("Back to main menu")]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=False
+    )
+
+
+# Подменю для кнопки About project
+def about_project_submenu():
+    return ReplyKeyboardMarkup(
+        [
+            [KeyboardButton("Discord")],
+            [KeyboardButton("Twitter")],
+            [KeyboardButton("What is N1?")],
+            [KeyboardButton("Ecosystem")],
+            [KeyboardButton("Back to main menu")]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=False
+    )
+
+
+# Подменю для кнопки MEGA POWER
+def mega_power_submenu():
+    return ReplyKeyboardMarkup(
+        [
+            [KeyboardButton("Activate Power")],
+            [KeyboardButton("Power Levels")],
+            [KeyboardButton("Settings")],
+            [KeyboardButton("Status")],
+            [KeyboardButton("Back to main menu")]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=False
+    )
+
+
+# Команда /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Welcome! Choose an option:",
+        reply_markup=main_keyboard()
+    )
+
+
+# Обработка нажатий кнопок
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text  # Текст нажатой кнопки
+
+    # Подменю для Roles
+    if text == "Roles":
+        await update.message.reply_text(
+            "Here are the latest articles:",
+            reply_markup=news_submenu()
+        )
+    elif text in ["N_ovator"]:
+        await update.message.reply_text(f"- Symbolizes your value as a core community member"
+                                        f"\n\n - Earned by building connections, attending and supporting our online and offline events, and contributing to the community in creative ways. Being active on Discord and Telegram, posting on Twitter, and attending our future AMAs and weekly events such as poker tournaments will count towards earning this role. "
+                                        f"\n\n - This role signifies your dedication to the community and will bring a sense of belonging and recognition within the community")
+    elif text in ["N-tertainer"]:
+        await update.message.reply_text(f"- Symbolizes your proactivity in creating content "
+                                        f"\n\n- Earned by making the effort to create content in forms of written and meme content, video content, spaces and podcasts, and any other creative output"
+                                        f"\n\n - This role signifies your active social media presence and will jumpstart your online merits")
+    elif text in ["N-thusiast"]:
+        await update.message.reply_text(f"- Symbolizes your skills as a creator of consistent high quality content"
+                                        "f\n\n- Earned by creating exceptional content in forms of written and meme content, video content, spaces and podcasts, and any other creative output"
+                                        "f\n\n- This highest tier role represents your expertise and skills and will reflect in your popularity on the platforms you create on")
+    elif text in ["N-sider"]:
+        await update.message.reply_text(f"- Symbolizes that you are a very valuable community member and a part of the N-sider group"
+                                        "f\n\n- Earned by being a strong contributor to N1"
+                                        "f\n\n- New N-siders can only be voted in by existing members")
+    # Подменю для About project
+    elif text == "About project":
+        await update.message.reply_text(
+            "Explore the project details:",
+            reply_markup=about_project_submenu()
+        )
+    elif text in ["Discord"]:
+        await update.message.reply_text(f"https://discord.com/invite/N1Chain")
+    elif text in ["Twitter"]:
+        await update.message.reply_text(f"https://x.com/N1Chain")
+    elif text in ["What is N1?"]:
+        await update.message.reply_text(f"N1 is a layer 1 blockchain designed from the ground up to support applications "
+                                        f"and horizontal scalability. Think Ethereum's roadmap without the baggage. "
+                                        f"Our key insight lies in avoiding consensus in almost all cases, providing "
+                                        f"more scale as the number of validators increases. Instead of using consensus "
+                                        f"to order all apps' transactions, transactions are instead unordered and asynchronous "
+                                        f"by default. Consensus is only introduced when bridging between apps. On top of that, "
+                                        f"data availability is built in and the network is execution environment agnostic, "
+                                        f"giving developers more freedom to tune performance.")
+    elif text in ["Ecosystem"]:
+        await update.message.reply_text(f"https://www.n1.xyz/explore")
+
+
+    # Подменю для MEGA POWER
+    elif text == "MEGA POWER":
+        await update.message.reply_text(
+            "MEGA POWER options:",
+            reply_markup=mega_power_submenu()
+        )
+    elif text in ["Activate Power", "Power Levels", "Settings", "Status"]:
+        await update.message.reply_text(f"Executing: {text}")
+
+    # Возврат в главное меню
+    elif text == "Back to main menu":
+        await update.message.reply_text(
+            "Back to main menu:",
+            reply_markup=main_keyboard()
+        )
+    else:
+        await update.message.reply_text("I don't understand that command.")
+
+
+# Запуск бота
+if __name__ == "__main__":
+    TOKEN = "7652828501:AAFGn3MLDqG4eqyRun3o__W-rjuIPjNkuKg"  # Вставьте ваш токен
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    # Обработчики команд и сообщений
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, button_handler))
+
+    print("Bot is running...")
+    app.run_polling()
